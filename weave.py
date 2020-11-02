@@ -5,7 +5,7 @@
         https://github.com/mpastell/Pweave
 """
 
-from pweave import publish, weave
+from pweave import weave
 from pathlib import Path
 
 
@@ -17,18 +17,14 @@ def main():
     src_dir = Path("src")
     build_dir = Path("build")
     # Get the pweave files from the source directory as strings
-    files = [f.name for f in src_dir.joinpath("markdown").glob("*.pmd")]
+    files = [f.name for f in src_dir.glob("*.pmd")]
 
     for f in files:
         # Turn python markdown into HTML
-        publish(
-            src_dir.joinpath("markdown").joinpath(f),
-            output=build_dir.joinpath(f.replace("pmd", "html")),
-        )
-        # Create a script
         weave(
-            src_dir.joinpath("markdown").joinpath(f),
-            output=src_dir.joinpath("scripts").joinpath(f.replace("pmd", "py")),
+            src_dir.joinpath(f),
+            output=build_dir.joinpath(f.replace("pmd", "html")),
+            cache=True,
         )
 
 

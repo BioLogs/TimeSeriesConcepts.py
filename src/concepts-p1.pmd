@@ -1,0 +1,103 @@
+<center>
+    <h1> Introduction to Time Series I </h1>
+    <h1> Gustavo Magaña & Edwin Bedolla </h1>
+    <h5> Created 5th April 2020, edited on 1st November 2020 </h5>
+</center>
+
+
+This document gathers some main concepts in time series analysis as well as some examples written for the [Python programming language](https://www.python.org/).
+First we import all the necessary libraries.
+
+```python, echo=False
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+
+
+# Enforce reproducibility
+rng = np.random.default_rng(912301)
+# Configure the aesthetics
+plt.style.use("seaborn")
+```
+
+## Definitions
+Let's start by defining **stochastic processes**: A family of _indexed_ random variables $Z(\omega, t)$ where $\omega$ belongs to a **sample space** and $t$ belongs to an **index set**.
+> - For a given $\omega$, $Z(\omega, t)$ as a function of $t$ is called a sample function or **realisation**.
+> - The population that consists of all possible realisations is called the **ensemble**.
+> - A **time series** is a collection of **random variables** indexed in a *ordered set* representing time periods.
+
+
+## Examples
+
+### 1. White noise
+
+For example, one of the basic time series is **white noise**, which is a time series
+generated from uncorrelated variables, which are most of the time *normally distributed*.
+
+```python, echo=False, width="linewidth"
+# Generate a range of evenly spaced dates, a year with a 10 hour resolution (freq).
+dates = pd.date_range(start="2018-01-01", end="2019-01-01", freq="10H")  
+# Create a time-series object
+ts = pd.Series(data=rng.standard_normal(len(dates)), index=dates)
+
+# Use built-in plotting method to visualise the time-series.
+fig = ts.plot()
+```
+
+This collection of random variables $\{x_t\}$ has the following properties:
+
+
+$$\mu_x = 0$$
+
+
+$$\sigma^2_x = 1$$
+
+
+- They are *independently and identically distributed* such that
+
+
+$$
+x_t \sim i.i.d. \mathcal{N}(0, 1)
+$$
+
+
+We can see that this time series is very *noisy*, with big peaks all over the place;
+if we wanted to do some meaningful analysis on it we might have a difficult time.
+Instead we can apply a very simple **smoothing** technique named the **moving average**.
+
+
+### 2. Moving average
+
+
+The _moving average_ is an actual time series in itself defined as
+
+
+$$
+v_t = \frac{1}{N} \sum_{i=0}^{N-1} w_{t-i}
+$$
+
+
+this means that the *moving average* takes as input the neighboring values in the past
+and future time periods and evaluates them, obtaining the **realization** as an arithmetic
+mean. The following example applies a moving average to a white noise time series.
+
+```python,echo=False,width="linewidth"
+# Create a new time-series. Six months with every observation evenly spaced by 50 hours.
+dates2 = pd.date_range(start="2018-01-01", end="2018-07-01", freq="50H")  
+ts2 = pd.Series(data=rng.standard_normal(len(dates2)), index=dates2)
+
+# Convert the time-series to a dataframe, we'll see the utility of this aftewards.
+ts_df  = pd.DataFrame(data=ts2, columns=["Time series"])
+
+# We don't have to index the column as we only have one, for the moment.
+
+ts_df["Moving average"] = ts_df.rolling(5).mean()
+fig = ts_df.plot()
+```
+
+```python,echo=False,width="linewidth"
+for i in range(2, 6):
+    ts_df[f"Moving average {i} values"] = ts_df["Time series"].rolling(i).mean()
+
+fig2 = ts_df.plot()
+```
