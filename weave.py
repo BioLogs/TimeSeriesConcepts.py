@@ -5,26 +5,34 @@
         https://github.com/mpastell/Pweave
 """
 
-import pweave
-import os
-import sys
+from pweave import publish, weave
+from pathlib import Path
 
 
 def main():
     """
-        Build html from specified files, using pweave.
+    Build html from specified files, using pweave.
     """
 
-    # Get the pweave files from the source directoy : 
-    files = [f for f in os.listdir("src/") if f[-4:] == ".pmd"]
-   
+    src_dir = Path("src")
+    build_dir = Path("build")
+    # Get the pweave files from the source directory as strings
+    files = [f.name for f in src_dir.joinpath("markdown").glob("*.pmd")]
+
     for f in files:
-        pweave.publish(
-            os.path.join("src", f), 
-            output = os.path.join("build", f.replace("pmd", "html"))
+        # Turn python markdown into HTML
+        publish(
+            src_dir.joinpath("markdown").joinpath(f),
+            output=build_dir.joinpath(f.replace("pmd", "html")),
         )
+        # Create a script
+        weave(
+            src_dir.joinpath("markdown").joinpath(f),
+            output=src_dir.joinpath("scripts").joinpath(f.replace("pmd", "py")),
+        )
+
+
 ##
 
 if __name__ == "__main__":
     main()
-
