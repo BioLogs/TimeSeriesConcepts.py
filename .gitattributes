@@ -1,5 +1,9 @@
 # Basic .gitattributes for a python repo.
 
+*.html linguist-detectable=false
+build/*.html linguist-detectable=false
+
+
 # Source files
 # ============
 *.pxd    text diff=python
@@ -19,6 +23,7 @@
 *.pyc    binary
 *.pyd    binary
 *.pyo    binary
+*.html   binary
 
 # Jupyter notebook
 *.ipynb  text
