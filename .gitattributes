@@ -2,6 +2,7 @@
 
 *.html linguist-detectable=false
 build/*.html linguist-detectable=false
+*.ipynb linguist-detectable=false
 
 
 # Source files
